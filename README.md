@@ -1,6 +1,12 @@
 # GPU Task Scheduler
 
-A simple Python lib that schedules deep learning tasks on available GPUs.
+![](https://img.shields.io/pypi/pyversions/gpu_task_scheduler) ![](https://img.shields.io/pypi/v/gpu_task_scheduler) ![](https://img.shields.io/pypi/dm/gpu_task_scheduler) ![](https://img.shields.io/pypi/l/gpu_task_scheduler) ![](https://img.shields.io/github/stars/sangyx/gpu_task_scheduler?style=social)
+
+A simple Python lib to schedule and execute deep learning tasks on available GPUs. It supports:
+
+- Custom selection of GPUs.
+- Maximum concurrency per GPU.
+- Dynamic task dispatch using threading.
 
 ## 📦 Installation
 
@@ -51,5 +57,5 @@ gpu_task_scheduler/
 │   └── scheduler.py
 ├── setup.py
 ├── README.md
-└── pyproject.toml (optional)
+└── other 
 ```

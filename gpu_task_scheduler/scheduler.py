@@ -7,7 +7,7 @@ from collections import defaultdict
 
 class GPUTaskScheduler:
     """
-    A scheduler to manage and dispatch shell-based tasks across available GPUs.
+    A scheduler to manage and dispatch deep learning tasks across available GPUs.
 
     Parameters:
     - wait_interval (int): Seconds to wait before re-checking GPU availability.
