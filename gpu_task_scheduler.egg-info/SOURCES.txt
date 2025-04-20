@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-setup.py
-gpu_task_scheduler/__init__.py
-gpu_task_scheduler/scheduler.py
-gpu_task_scheduler.egg-info/PKG-INFO
-gpu_task_scheduler.egg-info/SOURCES.txt
-gpu_task_scheduler.egg-info/dependency_links.txt
-gpu_task_scheduler.egg-info/top_level.txt

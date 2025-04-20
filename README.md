@@ -1,6 +1,6 @@
 # GPU Task Scheduler
 
-A simple Python lib that helps schedule deep learning tasks on available GPUs using `nvidia-smi`.
+A simple Python lib that helps schedule deep learning tasks on available GPUs.
 
 ## 📦 Installation
 
