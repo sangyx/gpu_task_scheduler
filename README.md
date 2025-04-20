@@ -1,6 +1,6 @@
 # GPU Task Scheduler
 
-A simple Python lib that helps schedule deep learning tasks on available GPUs.
+A simple Python lib that schedules deep learning tasks on available GPUs.
 
 ## 📦 Installation
 
