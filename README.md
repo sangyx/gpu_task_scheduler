@@ -47,15 +47,3 @@ scheduler.run_tasks(tasks)
 
 - Python 3.6+
 - `nvidia-smi` available in PATH (NVIDIA drivers installed)
-
-## 📁 Project Structure
-
-```
-gpu_task_scheduler/
-├── gpu_task_scheduler/
-│   ├── __init__.py
-│   └── scheduler.py
-├── setup.py
-├── README.md
-└── other 
-```
