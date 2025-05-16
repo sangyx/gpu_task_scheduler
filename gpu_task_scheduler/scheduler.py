@@ -13,10 +13,10 @@ class GPUTaskScheduler:
     - wait_interval (int): Seconds to wait before re-checking GPU availability.
     - allowed_gpu_ids (list[int] or None): Specific GPU IDs allowed for task execution.
     - max_tasks_per_gpu (int): Max concurrent tasks allowed on a single GPU.
-    - min_memory (int): Minimum free memory (in MiB) required on a GPU to be considered available.
+    - min_memory (int or float): Minimum free memory (in MiB or as a ratio) required on a GPU to be considered available.
     """
 
-    def __init__(self, wait_interval=30, allowed_gpu_ids=None, max_tasks_per_gpu=1, min_memory=0):
+    def __init__(self, wait_interval=30, allowed_gpu_ids=None, max_tasks_per_gpu=1, min_memory=0.8):
         self.wait_interval = wait_interval
         self.allowed_gpu_ids = allowed_gpu_ids if allowed_gpu_ids is not None else []
         self.max_tasks_per_gpu = max_tasks_per_gpu
@@ -59,20 +59,26 @@ class GPUTaskScheduler:
             int or None: ID of an available GPU, or None if all are busy.
         """
         try:
-            # Get free memory for each GPU
+            # Get free and total memory for each GPU
             memory_output = subprocess.check_output(
                 [
                     "nvidia-smi",
-                    "--query-gpu=index,memory.free",
+                    "--query-gpu=index,memory.free,memory.total",
                     "--format=csv,noheader,nounits"
                 ],
                 text=True
             ).strip().splitlines()
 
             for line in memory_output:
-                idx, free_mem = map(int, line.strip().split(','))
+                idx, free_mem, total_mem = map(int, line.strip().split(','))
+
+                if isinstance(self.min_memory, float) and 0 < self.min_memory < 1:
+                    required_mem = total_mem * self.min_memory
+                else:
+                    required_mem = self.min_memory
+
                 with self.lock:
-                    if (not self.allowed_gpu_ids or idx in self.allowed_gpu_ids) and  self.gpu_task_counts[idx] < self.max_tasks_per_gpu and free_mem >= self.min_memory:
+                    if (not self.allowed_gpu_ids or idx in self.allowed_gpu_ids) and self.gpu_task_counts[idx] < self.max_tasks_per_gpu and free_mem >= required_mem:
                         return idx
         except subprocess.CalledProcessError as e:
             print(f"Error checking GPU status: {e}")
