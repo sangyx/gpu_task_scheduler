@@ -42,6 +42,7 @@ scheduler.run_tasks(tasks)
 | `wait_interval`     | `int`       | `30`    | Number of seconds to wait before checking again if no GPU is available. |
 | `allowed_gpu_ids`   | `list[int]` | `None`  | List of GPU indices (e.g., `[0, 1]`) that the scheduler is allowed to use. If `None`, all GPUs are considered. |
 | `max_tasks_per_gpu` | `int`       | `1`     | Maximum number of concurrent tasks allowed on a single GPU. Helps share GPU among multiple tasks. |
+| `min_memory` | `int`       | `0`     | Minimum free memory (in MiB) required on a GPU to be considered available. |
 
 ## 🛠️ Requirements
 

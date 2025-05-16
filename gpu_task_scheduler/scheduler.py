@@ -13,12 +13,14 @@ class GPUTaskScheduler:
     - wait_interval (int): Seconds to wait before re-checking GPU availability.
     - allowed_gpu_ids (list[int] or None): Specific GPU IDs allowed for task execution.
     - max_tasks_per_gpu (int): Max concurrent tasks allowed on a single GPU.
+    - min_memory (int): Minimum free memory (in MiB) required on a GPU to be considered available.
     """
 
-    def __init__(self, wait_interval=30, allowed_gpu_ids=None, max_tasks_per_gpu=1):
+    def __init__(self, wait_interval=30, allowed_gpu_ids=None, max_tasks_per_gpu=1, min_memory=0):
         self.wait_interval = wait_interval
         self.allowed_gpu_ids = allowed_gpu_ids if allowed_gpu_ids is not None else []
         self.max_tasks_per_gpu = max_tasks_per_gpu
+        self.min_memory = min_memory
         self.gpu_task_counts = defaultdict(
             int
         )  # Tracks how many tasks are running on each GPU
@@ -57,33 +59,20 @@ class GPUTaskScheduler:
             int or None: ID of an available GPU, or None if all are busy.
         """
         try:
-            result = (
-                subprocess.check_output(
-                    [
-                        "nvidia-smi",
-                        "--query-compute-apps=gpu_uuid",
-                        "--format=csv,noheader",
-                    ],
-                    text=True,
-                )
-                .strip()
-                .splitlines()
-            )
-            busy_gpus = set(result)
+            # Get free memory for each GPU
+            memory_output = subprocess.check_output(
+                [
+                    "nvidia-smi",
+                    "--query-gpu=index,memory.free",
+                    "--format=csv,noheader,nounits"
+                ],
+                text=True
+            ).strip().splitlines()
 
-            uuid_map = subprocess.check_output(
-                ["nvidia-smi", "--query-gpu=index,uuid", "--format=csv,noheader"],
-                text=True,
-            )
-            for line in uuid_map.strip().splitlines():
-                idx, uuid = line.split(",")
-                idx = int(idx.strip())
-                uuid = uuid.strip()
+            for line in memory_output:
+                idx, free_mem = map(int, line.strip().split(','))
                 with self.lock:
-                    if (not self.allowed_gpu_ids or idx in self.allowed_gpu_ids) and (
-                        uuid not in busy_gpus
-                        and self.gpu_task_counts[idx] < self.max_tasks_per_gpu
-                    ):
+                    if (not self.allowed_gpu_ids or idx in self.allowed_gpu_ids) and  self.gpu_task_counts[idx] < self.max_tasks_per_gpu and free_mem >= self.min_memory:
                         return idx
         except subprocess.CalledProcessError as e:
             print(f"Error checking GPU status: {e}")
