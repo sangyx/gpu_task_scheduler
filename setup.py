@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gpu_task_scheduler",
-    version="0.2.0",
+    version="0.3.0",
     description="A python lib to schedule deep learning tasks on available GPUs.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
